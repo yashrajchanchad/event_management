@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ event.title }}</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 220px;
+            background-color: #343a40;
+            color: white;
+            padding-top: 20px;
+            transition: width 0.3s;
+        }
+
+        .sidebar a {
+            color: white;
+            padding: 15px;
+            text-decoration: none;
+            display: block;
+            font-size: 18px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .sidebar a:hover {
+            background-color: #575757;
+        }
+
+        .sidebar a.active {
+            background-color: #007bff;
+        }
+
+        .main-content {
+            margin-left: 240px;
+            padding: 20px;
+        }
+
+        .event-details {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .event-details h2 {
+            font-size: 32px;
+            color: #343a40;
+            margin-bottom: 20px;
+        }
+
+        .event-details p {
+            font-size: 18px;
+            margin-bottom: 12px;
+        }
+
+        .event-image {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .participants-table {
+            margin-top: 20px;
+        }
+
+        .event-action-buttons a {
+            margin-top: 15px;
+            margin-right: 10px;
+            display: inline-block;
+        }
+
+        .location, .description, .dates {
+            font-size: 18px;
+            margin-bottom: 15px;
+            padding: 12px;
+            background-color: #f1f1f1;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .location {
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .description {
+            color: #6c757d;
+        }
+
+        .dates {
+            color: #28a745;
+        }
+
+        .event-action-buttons .btn {
+            font-size: 16px;
+        }
+
+        .event-action-buttons a {
+            padding: 10px 20px;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 200px;
+            }
+
+            .main-content {
+                margin-left: 220px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <h4 class="text-center">Dashboard</h4>
+    <p class="text-center username">Welcome, {% if user.is_authenticated %}{{ user.username }}{% else %}Guest{% endif %}!</p>
+    <a href="{% url 'dashboard' %}" class="active">Home</a>
+    <a href="{% url 'event_list' %}">Event List</a>
+    <a href="{% url 'event_create' %}">Create Event</a>
+    <a href="{% url 'logout' %}">Logout</a>
+</div>
+
+<!-- Main Content -->
+<div class="main-content">
+    <div class="event-details">
+        <h2>{{ event.title }}</h2>
+        
+        <!-- Event Banner Image -->
+        {% if event.image %}
+            <img src="{{ event.image.url }}" alt="{{ event.title }}" class="event-image">
+        {% else %}
+            <p>No image available for this event.</p>
+        {% endif %}
+
+        <!-- Event Details -->
+        <div class="location">
+            <strong>Location:</strong> {{ event.location }}
+        </div>
+        <div class="description">
+            <strong>Description:</strong> {{ event.description }}
+        </div>
+        <div class="dates">
+            <strong>Start Date:</strong> {{ event.start_date|date:"F j, Y" }} <br>
+            <strong>End Date:</strong> {{ event.end_date|date:"F j, Y" }}
+        </div>
+
+        <h3>Participants</h3>
+
+        {% if event.participants.all %}
+            <div class="participants-table">
+                <!-- Table for Participants -->
+                <table class="table table-striped">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Mobile</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for participant in event.participants.all %}
+                            <tr>
+                                <td>{{ participant.name }}</td>
+                                <td>{{ participant.email }}</td>
+                                <td>{{ participant.phone_number }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-muted">No participants registered yet.</p>
+        {% endif %}
+
+        <!-- Check if the user is the event creator -->
+        {% if user == event.created_by %}
+            <div class="event-action-buttons">
+                <a href="{% url 'event_update' event.id %}" class="btn btn-warning">Edit Event</a>
+                <a href="{% url 'event_delete' event.id %}" class="btn btn-danger">Delete Event</a>
+                <a href="{% url 'dashboard' %}" class="btn btn-secondary">Back</a>
+            </div>
+        {% else %}
+            <div class="event-action-buttons">
+                <a href="{% url 'dashboard' %}" class="btn btn-secondary">Back</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Bootstrap JS and dependencies -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>

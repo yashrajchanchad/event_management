@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 200px;
+            background-color: #343a40;
+            color: white;
+            padding-top: 20px;
+            transition: width 0.3s;
+        }
+        .sidebar a {
+            color: white;
+            padding: 15px;
+            text-decoration: none;
+            display: block;
+            font-size: 18px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        .sidebar a:hover {
+            background-color: #575757;
+        }
+        .sidebar a.active {
+            background-color: #007bff;
+        }
+        .main-content {
+            margin-left: 220px;
+            padding: 20px;
+        }
+        .username {
+            font-weight: bold;
+            color: #007bff;
+        }
+        .card {
+            margin-bottom: 20px;
+        }
+        .action-buttons a {
+            margin-right: 10px;
+        }
+        .location {
+            color: #6c757d;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <h4 class="text-center text-white">Dashboard</h4>
+    <p class="text-center username">Welcome, {% if user.is_authenticated %}{{ user.username }}{% else %}Guest{% endif %}!</p>
+    <!-- Display the username here -->
+    <a href="{% url 'dashboard' %}" class="active">Home</a> 
+    <a href="{% url 'event_list' %}">Event List</a>
+    <a href="{% url 'event_create' %}">Create Event</a>
+    <a href="{% url 'logout' %}">Logout</a>
+</div>
+
+<!-- Main Content -->
+<div class="main-content">
+    <h2>Your Events</h2>
+    <!-- Button to create a new event -->
+    <div class="text-right mb-3">
+        <a href="{% url 'event_create' %}" class="btn btn-primary">Create New Event</a>
+    </div>
+
+    <!-- Event List -->
+    {% if events %}
+        <div class="row">
+            {% for event in events %}
+                <div class="col-md-4">
+                    <div class="card shadow-sm">
+                        <div class="card-header">
+                            <strong>{{ event.title }}</strong>
+                        </div>
+                        <div class="card-body">
+                            <p><small class="text-muted">Dates: {{ event.start_date|date:"Y-m-d" }} - {{ event.end_date|date:"Y-m-d" }}</small></p>
+                            <p class="location"><strong>Location:</strong> {{ event.location }}</p> <!-- Location added here -->
+                            <div class="action-buttons">
+                                <a href="{% url 'event_detail' event.id %}" class="btn btn-info btn-sm">View</a>
+                                <a href="{% url 'event_update' event.id %}" class="btn btn-warning btn-sm">Edit</a>
+                                <a href="{% url 'event_delete' event.id %}" class="btn btn-danger btn-sm">Delete</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-warning">
+            No events found. Create your first event now!
+        </div>
+    {% endif %}
+</div>
+
+<!-- Bootstrap JS and dependencies -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>
+    
