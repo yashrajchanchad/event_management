@@ -11,7 +11,7 @@ SECRET_KEY = 'django-insecure-e68j0rw_o!vmw+mvn-2iic8)2ow4ht)%26nze5%ihnik%0#%%8
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['event-management-tppa.onrender.com']
 
 # Application definition
 INSTALLED_APPS = [
